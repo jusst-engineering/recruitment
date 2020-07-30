@@ -52,7 +52,7 @@ Stream<String> eventGenerator() {
         after: Duration(seconds: 10),
         data: State(
           system: SystemState.booting,
-          bluetooth: BluetoothState.pairing,
+          bluetooth: BluetoothState.inactive,
           volume: 50,
         ),
       ),
