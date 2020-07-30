@@ -46,6 +46,23 @@ Stream<String> eventGenerator() {
     ],
   );
 
+  var positionSequence = EventSequence<State>([
+    DelayedEvent(
+      before: Duration(seconds: 18),
+      data: State(playbackPosition: 0),
+    ),
+    for (int i = 0; i < 70; i++)
+      DelayedEvent(
+        before: Duration(seconds: 1),
+        data: State(playbackPosition: i + 1),
+      ),
+    for (int i = 0; i < 125; i++)
+      DelayedEvent(
+        before: Duration(seconds: 1),
+        data: State(playbackPosition: i + 1),
+      ),
+  ]);
+
   var systemSequence = EventSequence<State>(
     [
       DelayedEvent(
@@ -97,6 +114,7 @@ Stream<String> eventGenerator() {
   void startSequence() {
     systemSequence.start(sendState);
     playbackSequence.start(sendState);
+    positionSequence.start(sendState);
     volumeSequence.start(sendState);
   }
 
