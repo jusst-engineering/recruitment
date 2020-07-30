@@ -43,6 +43,9 @@ Stream<String> eventGenerator() {
               duration: Duration(minutes: 2, seconds: 5).inSeconds),
         ),
       ),
+      DelayedEvent(
+        data: State(metadata: MetaData(), playback: PlaybackState.inactive),
+      )
     ],
   );
 
