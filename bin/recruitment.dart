@@ -28,9 +28,12 @@ Stream<String> eventGenerator() {
         data: State(
           playback: PlaybackState.playing,
           metadata: MetaData(
-              title: 'Shoulders',
-              artist: 'Sainvil',
-              duration: Duration(minutes: 1, seconds: 10).inSeconds),
+            title: 'Shoulders',
+            artist: 'Sainvil',
+            duration: Duration(minutes: 1, seconds: 10).inSeconds,
+            coverArt:
+                'http://resources.tidal.com/images/fdfa8041/3228/4542/bb37/8fa19f2219ff/750x750.jpg',
+          ),
         ),
       ),
       DelayedEvent(
@@ -38,9 +41,12 @@ Stream<String> eventGenerator() {
         data: State(
           playback: PlaybackState.playing,
           metadata: MetaData(
-              title: 'Lose Yourself',
-              artist: 'Eminem',
-              duration: Duration(minutes: 2, seconds: 5).inSeconds),
+            title: 'Lose Yourself',
+            artist: 'Eminem',
+            duration: Duration(minutes: 2, seconds: 5).inSeconds,
+            coverArt:
+                'http://resources.tidal.com/images/421be117/49b5/42e3/8b51/1a067267ef97/750x750.jpg',
+          ),
         ),
       ),
       DelayedEvent(
