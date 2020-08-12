@@ -18,8 +18,9 @@ int main(void)
   std::string readBuffer;
   curl = curl_easy_init();
       if(curl) {
-            curl_easy_setopt(curl, CURLOPT_URL, "http://time.jsontest.com/");
-            //curl_easy_setopt(curl, CURLOPT_URL, "http://0.0.0.0:8808/ws");
+            //curl_easy_setopt(curl, CURLOPT_URL, "http://time.jsontest.com/");
+            curl_easy_setopt(curl, CURLOPT_URL, "http://0.0.0.0:8808/ws");
+            //curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8808/ws");
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
             res = curl_easy_perform(curl);
@@ -29,7 +30,11 @@ int main(void)
     Json::Value obj;
     reader.parse(readBuffer, obj); 
 
-    std::cout << obj["time"].asString() << std::endl;
+    //std::cout << obj["metadata"].asString() << std::endl;
     //std::cout << obj.asString() << std::endl;
+    std::cout << obj.size() << std::endl;
+    std::cout << obj["time"] << std::endl;
+    std::cout << obj["date"] << std::endl;
+
   return 0;
 }
