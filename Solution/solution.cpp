@@ -1,8 +1,10 @@
-// main.cpp
+// g++ example.cpp -o example -lcurl -ljsoncpp
+
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
+
 #include <curl/curl.h>
 #include <jsoncpp/json/json.h>
 
@@ -22,8 +24,9 @@ namespace
 
 int main()
 {
-    //const std::string url("jsontext.com");
-    const std::string url("http://time.jsontest.com");
+    //const std::string url("http://date.jsontest.com/");
+    //const std::string url("http://0.0.0.0:8808/ws");
+    const std::string url("ws://0.0.0.0");
 
     CURL* curl = curl_easy_init();
 
@@ -40,7 +43,7 @@ int main()
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
     // Response information.
-    int httpCode(0);
+    long httpCode(0);
     std::unique_ptr<std::string> httpData(new std::string());
 
     // Hook up data handling function.
@@ -65,7 +68,7 @@ int main()
         Json::Value jsonData;
         Json::Reader jsonReader;
 
-        if (jsonReader.parse(*httpData, jsonData))
+        if (jsonReader.parse(*httpData.get(), jsonData))
         {
             std::cout << "Successfully parsed JSON data" << std::endl;
             std::cout << "\nJSON data received:" << std::endl;
@@ -97,3 +100,43 @@ int main()
 
     return 0;
 }
+
+//#include <iostream>
+//#include <string>
+//#include <curl/curl.h>
+//#include <jsoncpp/json/json.h>
+//
+//static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
+//{
+//    ((std::string*)userp)->append((char*)contents, size * nmemb);
+//    return size * nmemb;
+//}
+//
+//int main(void)
+//{
+//  CURL *curl;
+//  CURLcode res;
+//  std::string readBuffer;
+//  curl = curl_easy_init();
+//      if(curl) {
+//            curl_easy_setopt(curl, CURLOPT_URL, "http://time.jsontest.com/");
+//            //curl_easy_setopt(curl, CURLOPT_URL, "http://0.0.0.0:8808/ws");
+//            //curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:8808/ws");
+//            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+//            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+//            res = curl_easy_perform(curl);
+//            curl_easy_cleanup(curl);
+//      }
+//    Json::Reader reader;
+//    Json::Value obj;
+//    reader.parse(readBuffer, obj); 
+//
+//    //std::cout << obj["metadata"].asString() << std::endl;
+//    //std::cout << obj.asString() << std::endl;
+//    //std::cout << obj.size() << std::endl;
+//    //std::cout << obj["time"] << std::endl;
+//    //std::cout << obj["date"] << std::endl;
+//
+//  return 0;
+//}
+//
