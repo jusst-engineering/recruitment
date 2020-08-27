@@ -26,7 +26,8 @@ int main()
 {
     //const std::string url("http://date.jsontest.com/");
     //const std::string url("http://0.0.0.0:8808/ws");
-    const std::string url("ws://0.0.0.0");
+    const std::string url("http://0.0.0.0:8808/ws");
+    //const std::string url("ws://0.0.0.0");
 
     CURL* curl = curl_easy_init();
 
