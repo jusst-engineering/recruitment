@@ -46,68 +46,62 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 // prints the message and then sends a copy of the message back to the server.
 void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 
-    //std::cout << "on_message called with hdl: " << hdl.lock().get()
-    //          << " and message: " << msg->get_payload()
-    //          << std::endl;
-
-	// raw payload data
-    //std::cout << "message:" << msg->get_payload() << std::endl;
-    //std::cout << msg->get_payload() << std::endl;
-
 	// Payload
 	std::string payload(msg->get_payload());
 	auto j = json::parse(payload);
-	bool bluetoothpairing;
 
 	// Print payload
 	std::cout << j << std::endl;
 
 	if(j.contains("system")) {
+	}
 
-		bool syserror = j["system"].get<std::string>() == "error";
-		bool sysupdating = j["system"].get<std::string>() == "updating";
-		bool sysbooting = j["system"].get<std::string>() == "booting";
+	if(j.contains("playback")) {
+	}
+
+	if(j.contains("bluetooth")) {
+	}
+
+	bool syserror = j["system"].get<std::string>() == "error";
+	bool sysupdating = j["system"].get<std::string>() == "updating";
+	bool sysbooting = j["system"].get<std::string>() == "booting";
+
+	// TODO Maybe a change is when old volume differs from new volume? 
+	bool playbackvolumechanged = j.contains("volume");
+	bool playbackinactive = j["playbback"].get<std::string>() == "inactive";
+
+	// TODO Bluetooth paired state should be remembered
+	bool bluetoothpairing = j["bluetooth"].get<std::string>() == "pairing";
+
+	bool playbackplayingandbluetoothconnected = j["playbback"].get<std::string>() == "playing" && bluetoothpairing; 
+	bool playbackplaying = j["playbback"].get<std::string>() == "playing";
+
+	bool playbackpaused = j["playbback"].get<std::string>() == "paused";
 
 	if(syserror) {
 
 		std::cout << "red@100" << std::endl;
-
 	} 
 
 	if(sysupdating) {
 
 		std::cout << "off" << std::endl;
 		std::cout << "yellow@100" << std::endl;
-
 	} 
 
 	if(sysbooting) {
 
 		std::cout << "red@10" << std::endl;
-
 	} 
 
-	}
+	if(bluetoothpairing) {
 
-	if(j.contains("bluetooth")) {
-		// TODO Bluetooth paired state should be remembered
-		bluetoothpairing = j["bluetooth"].get<std::string>() == "pairing";
+		std::cout << "off" << std::endl;
+		std::cout << "blue@100" << std::endl;
+	} 
 
-		if(bluetoothpairing) {
-
-			std::cout << "off" << std::endl;
-			std::cout << "blue@100" << std::endl;
-
-		} 
-	}
-
-	// TODO Maybe a change is when old volume differs from new volume? 
 	if(j.contains("playback")) {
-		bool playbackvolumechanged = j.contains("volume");
-		bool playbackinactive = j["playbback"].get<std::string>() == "inactive";
-		bool playbackplayingandbluetoothconnected = j["playbback"].get<std::string>() == "playing" && bluetoothpairing; 
-		bool playbackplaying = j["playbback"].get<std::string>() == "playing";
-		bool playbackpaused = j["playbback"].get<std::string>() == "paused";
+
 
 	if(playbackvolumechanged) {
 
@@ -118,7 +112,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 		std::cout << "white@ " << volume << " for 3s" << std::endl;
 
 	} 
-
 
 	if(playbackinactive) {
 
@@ -145,9 +138,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	} 
 
 	}
-
-
-
 
 	websocketpp::lib::error_code ec;
 
