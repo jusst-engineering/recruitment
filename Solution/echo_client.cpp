@@ -25,12 +25,11 @@
  *
  */
 
-//#include <../websocketpp/config/asio_no_tls_client.hpp>
-//#include <../websocketpp/client.hpp>
-#include <../websocketpp/websocketpp/config/asio_no_tls_client.hpp>
-#include <../websocketpp/websocketpp/client.hpp>
-//#include "../websocketpp/websocketpp/config/asio_no_tls_client.hpp"
-//#include "../websocketpp/websocketpp/client.hpp"
+#include <websocketpp/config/asio_no_tls_client.hpp>
+#include <websocketpp/client.hpp>
+#include <nlohmann/json.hpp>
+#include <boost/algorithm/string.hpp>
+#include <string>
 #include <iostream>
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
@@ -38,6 +37,7 @@ typedef websocketpp::client<websocketpp::config::asio_client> client;
 using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
+using nlohmann::json; 
 
 // pull out the type of messages sent by our config
 typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
@@ -45,25 +45,125 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 // This message handler will be invoked once for each incoming message. It
 // prints the message and then sends a copy of the message back to the server.
 void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
-    std::cout << "on_message called with hdl: " << hdl.lock().get()
-              << " and message: " << msg->get_payload()
-              << std::endl;
+
+    //std::cout << "on_message called with hdl: " << hdl.lock().get()
+    //          << " and message: " << msg->get_payload()
+    //          << std::endl;
+
+	// raw payload data
+    //std::cout << "message:" << msg->get_payload() << std::endl;
+    //std::cout << msg->get_payload() << std::endl;
+
+	// Payload
+	std::string payload(msg->get_payload());
+	auto j = json::parse(payload);
+	bool bluetoothpairing;
+
+	// Print payload
+	std::cout << j << std::endl;
+
+	if(j.contains("system")) {
+
+		bool syserror = j["system"].get<std::string>() == "error";
+		bool sysupdating = j["system"].get<std::string>() == "updating";
+		bool sysbooting = j["system"].get<std::string>() == "booting";
+
+	if(syserror) {
+
+		std::cout << "red@100" << std::endl;
+
+	} 
+
+	if(sysupdating) {
+
+		std::cout << "off" << std::endl;
+		std::cout << "yellow@100" << std::endl;
+
+	} 
+
+	if(sysbooting) {
+
+		std::cout << "red@10" << std::endl;
+
+	} 
+
+	}
+
+	if(j.contains("bluetooth")) {
+		// TODO Bluetooth paired state should be remembered
+		bluetoothpairing = j["bluetooth"].get<std::string>() == "pairing";
+
+		if(bluetoothpairing) {
+
+			std::cout << "off" << std::endl;
+			std::cout << "blue@100" << std::endl;
+
+		} 
+	}
+
+	// TODO Maybe a change is when old volume differs from new volume? 
+	if(j.contains("playback")) {
+		bool playbackvolumechanged = j.contains("volume");
+		bool playbackinactive = j["playbback"].get<std::string>() == "inactive";
+		bool playbackplayingandbluetoothconnected = j["playbback"].get<std::string>() == "playing" && bluetoothpairing; 
+		bool playbackplaying = j["playbback"].get<std::string>() == "playing";
+		bool playbackpaused = j["playbback"].get<std::string>() == "paused";
+
+	if(playbackvolumechanged) {
+
+		// Volume extraction
+		auto volume = j["volume"].get<int>();
+		std::cout << volume << std::endl;
+
+		std::cout << "white@ " << volume << " for 3s" << std::endl;
+
+	} 
 
 
-    websocketpp::lib::error_code ec;
+	if(playbackinactive) {
 
-    c->send(hdl, msg->get_payload(), msg->get_opcode(), ec);
+		std::cout << "off" << std::endl;
+
+	} 
+
+	if(playbackplayingandbluetoothconnected) {
+
+		std::cout << "blue@10" << std::endl;
+
+	} 
+
+	if(playbackplaying) {
+
+		std::cout << "white@10" << std::endl;
+
+	} 
+
+	if(playbackpaused) {
+
+		std::cout << "white@50" << std::endl;
+
+	} 
+
+	}
+
+
+
+
+	websocketpp::lib::error_code ec;
+
+    //c->send(hdl, msg->get_payload(), msg->get_opcode(), ec);
+
     if (ec) {
         std::cout << "Echo failed because: " << ec.message() << std::endl;
     }
 }
 
 int main(int argc, char* argv[]) {
+
     // Create a client endpoint
     client c;
 
-    //std::string uri = "ws://localhost:9002";
-    std::string uri = "ws://0.0.0.0/ws";
+    std::string uri = "ws://0.0.0.0:8808/ws";
 
     if (argc == 2) {
         uri = argv[1];
@@ -81,6 +181,7 @@ int main(int argc, char* argv[]) {
         c.set_message_handler(bind(&on_message,&c,::_1,::_2));
 
         websocketpp::lib::error_code ec;
+
         client::connection_ptr con = c.get_connection(uri, ec);
         if (ec) {
             std::cout << "could not create connection because: " << ec.message() << std::endl;
@@ -95,7 +196,11 @@ int main(int argc, char* argv[]) {
         // this will cause a single connection to be made to the server. c.run()
         // will exit when this connection is closed.
         c.run();
+
     } catch (websocketpp::exception const & e) {
+
+        std::cout << "exception catchhhhhh" << std::endl;
         std::cout << e.what() << std::endl;
     }
 }
+
