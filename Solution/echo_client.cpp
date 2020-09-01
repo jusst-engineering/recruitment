@@ -48,7 +48,21 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	/* 
 		Ein paar Worte zur Vorgehenesweise
 
-		Ich benutze hauptsächlich die Library "websocketpp", womit ich die Datenpakete annehme. Boost ist eine Abhängigkeit von websocketpp. Die Methode on_message wird jedes Mal aufgerufen, wenn eine neue Message ankommt. Daraufhin liegt das reine Payload bereits vor und kann weiterverarbeitet werden, hierzu verwende ich die JSON-LIbrary "json". Mit Hilfe des Strings "payload" kann ein JSON-Objekt initliaisiert werden und die entsprechenden JSON-Library-Befehle sind anwendbar. Ich printe immer das reine Payload, um zu sehen, ob meine ausgegebenen Meldungen stimmen. Die nachfolgenden Idee ist, dass pro abzubildenen Systemstate eine if die entsprechende std::cout-Ausgabe "triggert". Der Übersicher halber hab ich alle Bools oben deklariert und initialisiert, ebenso das Volume, was für die eine Ausgabe wichtig ist. Die nachfolgenden Ifs schauen, ob zu dem entsprechendem Schlüsselwort bzw. Key auch der gesuchte Value exisitiert und beschreiben dann einen obigen definierten Boolean. Der Grund, warum immer das Contains davor ist, ist, dass es bei der JSON-Library keinen Default-Wert gibt, d.h. wenn ein Datenpaket z.B. kein "system" enthält, wird eine Exception geworfen, weil der String null ist. Das kann verhindert werden, wenn man vorher schaut, ob der Key überhaupt im Datenpaket enthalten ist, sieht allerdings nicht so schön aus und ich habe auch sehr lange nach einer Lösung gesucht auf der GitHub-Issue-Seite von nlohmann/json. Pro Boolean gibt es eben eine passende If, die dann die std::cout-Ausgabe triggert. Bei System-Error z.B. ist das nicht besonders spannend, allerdings muss z.B. für white@volume der Volume-Int extrahiert werden. Ebenso muss für die Ausgabe blue@10 sich jeweils der State gemerkt werden, wenn Bluetooth connectet ist UND ein Song spielt, da es nicht vorkommt, dass beides in einem Paket passiert.
+		Ich benutze hauptsächlich die Library "websocketpp", womit ich die Datenpakete annehme. Boost ist eine Abhängigkeit 
+		von websocketpp. Die Methode on_message wird jedes Mal aufgerufen, wenn eine neue Message ankommt. Daraufhin liegt 
+		das reine Payload bereits vor und kann weiterverarbeitet werden, hierzu verwende ich die JSON-LIbrary "json". 
+		Mit Hilfe des Strings "payload" kann ein JSON-Objekt initliaisiert werden und die entsprechenden JSON-Library-Befehle 
+		sind anwendbar. Ich printe immer das reine Payload, um zu sehen, ob meine ausgegebenen Meldungen stimmen. 
+		Die nachfolgenden Idee ist, dass pro abzubildenen Systemstate eine if die entsprechende std::cout-Ausgabe "triggert". 
+		Der Übersicher halber hab ich alle Bools oben deklariert und initialisiert, ebenso das Volume, was für die eine Ausgabe wichtig ist. Die nachfolgenden Ifs schauen, ob zu dem entsprechendem Schlüsselwort bzw. Key auch der gesuchte Value exisitiert 
+		und beschreiben dann einen obigen definierten Boolean. Der Grund, warum immer das Contains davor ist, ist, dass 
+		es bei der JSON-Library keinen Default-Wert gibt, d.h. wenn ein Datenpaket z.B. kein "system" enthält, wird eine 
+		Exception geworfen, weil der String null ist. Das kann verhindert werden, wenn man vorher schaut, ob der Key überhaupt 
+		im Datenpaket enthalten ist, sieht allerdings nicht so schön aus und ich habe auch sehr lange nach einer Lösung gesucht 
+		auf der GitHub-Issue-Seite von nlohmann/json. Pro Boolean gibt es eben eine passende If, die dann die std::cout-Ausgabe 
+		triggert. Bei System-Error z.B. ist das nicht besonders spannend, allerdings muss z.B. für white@volume der Volume-Int 
+		extrahiert werden. Ebenso muss für die Ausgabe blue@10 sich jeweils der State gemerkt werden, wenn Bluetooth connectet 
+		ist UND ein Song spielt, da es nicht vorkommt, dass beides in einem Paket passiert.
 	*/
 
 	// Payload
