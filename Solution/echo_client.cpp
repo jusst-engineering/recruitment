@@ -46,7 +46,7 @@ typedef websocketpp::config::asio_client::message_type::ptr message_ptr;
 void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 
 	/* 
-		Ein paar Worte zur Vorgehenesweise
+		Ein paar Worte zur Vorgehensweise
 
 		Ich benutze hauptsächlich die Library "websocketpp", womit ich die Datenpakete annehme. Boost ist eine Abhängigkeit 
 		von websocketpp. Die Methode on_message wird jedes Mal aufgerufen, wenn eine neue Message ankommt. Daraufhin liegt 
@@ -54,7 +54,7 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 		Mit Hilfe des Strings "payload" kann ein JSON-Objekt initliaisiert werden und die entsprechenden JSON-Library-Befehle 
 		sind anwendbar. Ich printe immer das reine Payload, um zu sehen, ob meine ausgegebenen Meldungen stimmen. 
 		Die nachfolgenden Idee ist, dass pro abzubildenen Systemstate eine if die entsprechende std::cout-Ausgabe "triggert". 
-		Der Übersicher halber hab ich alle Bools oben deklariert und initialisiert, ebenso das Volume, was für die eine Ausgabe wichtig ist. Die nachfolgenden Ifs schauen, ob zu dem entsprechendem Schlüsselwort bzw. Key auch der gesuchte Value exisitiert 
+		Der Übersicht halber hab ich alle Bools oben deklariert und initialisiert, ebenso das Volume, was für die eine Ausgabe wichtig ist. Die nachfolgenden Ifs schauen, ob zu dem entsprechendem Schlüsselwort bzw. Key auch der gesuchte Value exisitiert 
 		und beschreiben dann einen obigen definierten Boolean. Der Grund, warum immer das Contains davor ist, ist, dass 
 		es bei der JSON-Library keinen Default-Wert gibt, d.h. wenn ein Datenpaket z.B. kein "system" enthält, wird eine 
 		Exception geworfen, weil der String null ist. Das kann verhindert werden, wenn man vorher schaut, ob der Key überhaupt 
@@ -63,6 +63,10 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 		triggert. Bei System-Error z.B. ist das nicht besonders spannend, allerdings muss z.B. für white@volume der Volume-Int 
 		extrahiert werden. Ebenso muss für die Ausgabe blue@10 sich jeweils der State gemerkt werden, wenn Bluetooth connectet 
 		ist UND ein Song spielt, da es nicht vorkommt, dass beides in einem Paket passiert.
+
+		Kritik:
+		Das JSON-Parsing hat für mich jetzt derartig ganz gut funktioniert, aber man kann es vielleicht strukturierter hinbekommen, dass 
+		der Code (wie man Key/Value vergleicht/extrahiert) wartbarer ist, wenn sich die Anforderungen bzw. System-States ändern.  
 	*/
 
 	// Payload
@@ -123,10 +127,15 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	
 	} 
 
+	std::cout << "playbackplaying " << playbackplaying << std::endl;
+	std::cout << "bluetoothpaired " << bluetoothpaired << std::endl;
+
 	if(playbackplaying && bluetoothpaired) {
+
 		// First occurence of playbackPosition indicates if a song is playing
+		// TODO Doesn't work yet -> no blue@10 state
 		playbackplayingandbluetoothconnected = true;
-		std::cout << "yooooooooooooooooooooooooooooo" << std::endl;
+		std::cout << "yoooooooo" << std::endl;
 	} else {
 
 		//playbackplayingandbluetoothconnected = false;
@@ -160,7 +169,7 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 
 		std::cout << "white@" << volume << " for 3s" << std::endl;
 
-		// TODO fade
+		// TODO Fade volume/brightness value within 3s to 0
 
 		playbackvolumechanged = false;
 	} 
@@ -179,7 +188,7 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	if(playbackplaying) {
 
 		std::cout << "white@10" << std::endl;
-		playbackplaying = false;
+		//playbackplaying = false;
 	} 
 
 	if(playbackpaused) {
