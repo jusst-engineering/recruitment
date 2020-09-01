@@ -127,8 +127,8 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	
 	} 
 
-	std::cout << "playbackplaying " << playbackplaying << std::endl;
-	std::cout << "bluetoothpaired " << bluetoothpaired << std::endl;
+	//std::cout << "playbackplaying " << playbackplaying << std::endl;
+	//std::cout << "bluetoothpaired " << bluetoothpaired << std::endl;
 
 	if(playbackplaying && bluetoothpaired) {
 
