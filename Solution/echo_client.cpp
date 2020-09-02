@@ -124,6 +124,9 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 		bluetoothpairing = j["bluetooth"].get<std::string>() == "pairing";
 	} 
 
+	//std::cout << playbackplaying<< std::endl;
+	//std::cout << bluetoothpairing<< std::endl;
+
 	if(playbackplaying && bluetoothpairing) {
 
 		// TODO Doesn't work yet -> no blue@10 state
