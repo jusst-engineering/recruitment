@@ -85,7 +85,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	bool playbackpaused = false;
 	bool playbackvolumechanged = false;
 	bool bluetoothpairing = false;
-	bool bluetoothpaired = false;
 
 	int volume = 0;
 
@@ -109,11 +108,11 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 
 	if(j.contains("playback")) {
 		playbackinactive = j["playback"].get<std::string>() == "inactive";
-		if(playbackinactive) playbackplaying = false;
+		//if(playbackinactive) playbackplaying = false;
 	}
 
-	if(j.contains("playbackPosition")) {
-		playbackplaying = true;
+	if(j.contains("playback")) {
+		playbackplaying = j["playback"].get<std::string>() == "playing";
 	}
 
 	if(j.contains("playback")) {
@@ -123,19 +122,13 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 	if(j.contains("bluetooth")) {
 		// There is no "paired" message, so I assume after no error message after pairing the device is paired
 		bluetoothpairing = j["bluetooth"].get<std::string>() == "pairing";
-		bluetoothpaired = true;
-	
 	} 
 
-	//std::cout << "playbackplaying " << playbackplaying << std::endl;
-	//std::cout << "bluetoothpaired " << bluetoothpaired << std::endl;
+	if(playbackplaying && bluetoothpairing) {
 
-	if(playbackplaying && bluetoothpaired) {
-
-		// First occurence of playbackPosition indicates if a song is playing
 		// TODO Doesn't work yet -> no blue@10 state
 		playbackplayingandbluetoothconnected = true;
-		std::cout << "yoooooooo" << std::endl;
+
 	} else {
 
 		//playbackplayingandbluetoothconnected = false;
@@ -162,7 +155,6 @@ void on_message(client* c, websocketpp::connection_hdl hdl, message_ptr msg) {
 
 		std::cout << "off" << std::endl;
 		std::cout << "blue@100" << std::endl;
-		bluetoothpairing = false;
 	}  
 
 	if(playbackvolumechanged) {
