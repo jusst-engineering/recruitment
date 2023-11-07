@@ -9,29 +9,31 @@ class DelayedEvent<T> {
   final Duration after;
   final T data;
 
-  Timer _timer;
+  Timer? _timer;
 
   DelayedEvent({
-    this.before,
-    this.after,
-    this.data,
+    this.before = Duration.zero,
+    this.after = Duration.zero,
+    required this.data,
   });
 
   /// Start the DelayedEvent
   ///
   /// Calls `onExpired` after the specified `delay`
   void start({
-    Function(T data) onValid,
-    Function(T data) onExpired,
+    Function(T data)? onValid,
+    Function(T data)? onExpired,
   }) {
     if (_timer != null) return;
-    _timer = Timer(before ?? Duration.zero, () {
+    _timer = Timer(before, () {
       if (onValid != null) {
         onValid(data);
       }
-      _timer = Timer(after ?? Duration.zero, () {
+      _timer = Timer(after, () {
         _timer = null;
-        onExpired(data);
+        if (onExpired != null) {
+          onExpired(data);
+        }
       });
     });
   }

@@ -114,7 +114,7 @@ Stream<String> eventGenerator() {
     DelayedEvent(before: Duration(milliseconds: 300), data: State(volume: 55)),
   ]);
 
-  StreamController<String> controller;
+  final controller = StreamController<String>();
 
   void sendState(State state) {
     controller.add(json.encode(state));
@@ -131,12 +131,11 @@ Stream<String> eventGenerator() {
     // FIXME: Interrupt EventSequence?
   }
 
-  controller = StreamController(
-    onListen: startSequence,
-    onPause: stopSequence,
-    onResume: startSequence,
-    onCancel: stopSequence,
-  );
+  controller
+    ..onListen = startSequence
+    ..onPause = stopSequence
+    ..onResume = startSequence
+    ..onCancel = stopSequence;
 
   return controller.stream;
 }
@@ -144,15 +143,22 @@ Stream<String> eventGenerator() {
 void main(List<String> arguments) {
   print('Welcome to the jusst.challenge');
 
-  runZoned(() async {
-    var server = await HttpServer.bind('0.0.0.0', 8808);
-    await for (var req in server) {
-      if (req.uri.path == '/ws') {
-        // Create HttpSocket from http request
-        var socket = await WebSocketTransformer.upgrade(req);
-        socket.listen(handleMsg);
-        unawaited(socket.addStream(eventGenerator()));
+  runZonedGuarded(
+    () async {
+      var server = await HttpServer.bind('0.0.0.0', 8808);
+      await for (var req in server) {
+        if (req.uri.path == '/ws') {
+          // Create HttpSocket from http request
+          try {
+            var socket = await WebSocketTransformer.upgrade(req);
+            socket.listen(handleMsg);
+            unawaited(socket.addStream(eventGenerator()));
+          } catch (e) {
+            print('Could not upgrade request to websocket: $e');
+          }
+        }
       }
-    }
-  }, onError: (err) => print('Error occured: $err'));
+    },
+    (err, _) => print('Unexpected error occured: $err'),
+  );
 }

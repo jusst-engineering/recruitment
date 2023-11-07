@@ -12,12 +12,12 @@ enum BluetoothState { inactive, pairing, connected }
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class State {
-  final SystemState system;
-  final PlaybackState playback;
-  final int volume;
-  final BluetoothState bluetooth;
-  final MetaData metadata;
-  final int playbackPosition;
+  final SystemState? system;
+  final PlaybackState? playback;
+  final int? volume;
+  final BluetoothState? bluetooth;
+  final MetaData? metadata;
+  final int? playbackPosition;
 
   State({
     this.system,
