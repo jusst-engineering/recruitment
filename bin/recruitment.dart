@@ -156,6 +156,18 @@ void main(List<String> arguments) {
           } catch (e) {
             print('Could not upgrade request to websocket: $e');
           }
+        } else {
+          final path = req.uri.path == '/' ? 'instructions.html' : req.uri.path;
+          final f = File(path);
+          if (await f.exists() == false) {
+            req.response.statusCode = HttpStatus.notFound;
+            req.response.write('Not found');
+            await req.response.close();
+          } else {
+            req.response.headers
+                .set('Content-Type', 'text/html; charset=UTF-8');
+            await f.openRead().pipe(req.response);
+          }
         }
       }
     },
